@@ -1,0 +1,11 @@
+[Unit]
+Description=ISP IP retrieval publisher
+After=network.target
+
+[Service]
+ExecStart=${HOME}/bin
+Restart=always
+User=gek
+
+[Install]
+WantedBy=multi-user.target
