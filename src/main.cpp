@@ -1,21 +1,18 @@
 #include <iostream>
-#include <atomic>
-#include <cstring>
-#include <thread>
 #include <getopt.h>
+#include <functional>
 
 #include "mqtt_client.h"
 #include "ip_retrieval.h"
 
 #define PROGRAM_NAME "ispipd"
 #define BINARY_NAME  "ispipd"
-#define VERSION      "1.0.0"
+#define VERSION      "1.5.0"
 
 #define PROGRAM_VERSION_DATETIME \
         PROGRAM_NAME \
         " version " VERSION ", " \
-        "compiled " __DATE__ " at " __TIME__
-
+        "compiled " __DATE__ " at " __TIME__        
 
 void usage()
 {
@@ -65,13 +62,19 @@ int main(int argc, char* argv[])
 
     std::cout << "Hello, from " << PROGRAM_VERSION_DATETIME << std::endl;
 
-    ThreadSafeQueue<std::string> dataQueue;
+    ThreadSafeQueue dataQueue;
 
-    std::thread tclient(thread_mqtt_client, std::ref(dataQueue));
-    std::thread tretrieval(thread_ip_retrieval, std::ref(dataQueue));
+    auto socket = new sock::IpRetrievalHandler 
+        (sock::params::hostname, sock::params::port, sock::params::request, dataQueue);
+    
+    auto client = new mqtt::mqtt_client 
+        (mqtt::params::host, mqtt::params::port, mqtt::params::username, mqtt::params::password, dataQueue);
 
-    tclient.join();
-    tretrieval.join();
+    socket->run();
+    client->run();
+
+    delete socket;
+    delete client;
 
     return 0;
 }

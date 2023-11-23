@@ -16,6 +16,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE mosquittopp pthread)
 # Include the 'inc' directory for header files
 target_include_directories(${PROJECT_NAME} PRIVATE inc)
 
+# # Add a test directory and specify test files
+add_subdirectory(test)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
